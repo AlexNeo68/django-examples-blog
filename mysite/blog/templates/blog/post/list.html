@@ -10,4 +10,5 @@
         </div>
 
     {% endfor %}
+    {% include "blog/post/pagination.html" with page=page_obj %}
 {% endblock content %}
