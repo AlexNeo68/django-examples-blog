@@ -4,8 +4,8 @@
     {% for post in posts %}
 
         <div>
-            <h2><a href="{% url "blog:post-detail" post.pk %}">{{post.title}}</a></h2>
-            <p class="date">Publish {{post.created_at}} by {{post.author}}</p>
+            <h2><a href="{{post.get_absolute_url}}">{{post.title}}</a></h2>
+            <p class="date">Publish {{post.publish}} by {{post.author}}</p>
             <p>{{post.body|truncatewords:30|linebreaks}}</p>
         </div>
 
