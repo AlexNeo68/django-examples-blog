@@ -5,6 +5,7 @@ from django.db.models.query import QuerySet
 from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth.models import User
+from taggit.managers import TaggableManager
 
 
 class PublishedManager(models.Manager):
@@ -17,6 +18,8 @@ class Post(models.Model):
     class Status(models.TextChoices):
         DRAFT = 'DF', 'Draft'
         PUBLISHED = 'PB', 'Published'
+
+    tags = TaggableManager()
 
 
     title = models.CharField(max_length=250)
