@@ -10,6 +10,8 @@ from .forms import CommentForm, EmailPostForm
 from .models import Comment, Post
 from taggit.models import Tag
 
+from django.db.models import Count
+
 
 @require_POST
 def post_comment(request: HttpRequest, post_id: int):
@@ -64,10 +66,16 @@ def detail_post(request, year, month, day, post):
     )
     comments = post.comments.filter(active=True)
     form = CommentForm()
+
+    post_tags_id = post.tags.values_list('id', flat=True)
+    semilar_posts = Post.published.filter(tags__in=post_tags_id).exclude(id=post.id)
+    semilar_posts = semilar_posts.annotate(same_tags=Count('tags')).order_by('-same_tags', '-publish')[:4]
+
     context = {
         "post": post,
         "form": form,
-        "comments": comments
+        "comments": comments,
+        "semilar_posts": semilar_posts,
     }
     return render(request, "blog/post/detail.html", context)
 
