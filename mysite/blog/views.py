@@ -4,8 +4,9 @@ from django.http import HttpRequest
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView
 from django.views.decorators.http import require_POST
+from django.contrib.postgres.search import SearchVector
 
-from .forms import CommentForm, EmailPostForm
+from .forms import CommentForm, EmailPostForm, SearchForm
 
 from .models import Comment, Post
 from taggit.models import Tag
@@ -114,3 +115,22 @@ def share_post(request: HttpRequest, post_id):
     return render(
         request, "blog/post/share.html", {"post": post, "form": form, "sent": sent}
     )
+
+def post_search(request: HttpRequest):
+    form = SearchForm()
+    query = None
+    results = []
+
+    if 'query' in request.GET:
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            results = Post.published.annotate(search=SearchVector('title', 'body'),).filter(search=query)
+
+    context = {
+        'form': form,
+        'query': query,
+        'results': results,
+    }
+
+    return render(request, 'blog/post/search.html', context)
