@@ -1,4 +1,5 @@
 {% extends "blog/base.html" %}
+{% load blog_tags %}
 
 {% block title %}{{post.title}} :: {{ block.super }}{% endblock title %}
 
@@ -6,7 +7,7 @@
 
     <h1>{{post.title}}</h1>
     <p class="date">Publish {{post.publish}} by {{post.author}}</p>
-    {{post.body|linebreaks}}
+    {{post.body|markdown}}
 
     <p>
         <a href="{% url "blog:post-share" post.id %}">Поделиться</a>
@@ -22,11 +23,22 @@
                 Comment {{forloop.counter}} by {{comment.name}}
                 {{comment.created}}
             </p>
-            {{comment.body|linebreaks}}
+            {{comment.body|markdown}}
         </div>
     {% empty %}
 
         <h3>Comments not yet</h3>
+    
+    {% endfor %}
+
+    <h2>Semilar Posts</h2>
+    {% for post in semilar_posts %}
+        <p>
+            <a href="{{post.get_absolute_url}}">{{post.title}}</a>
+        </p>
+    {% empty %}
+
+        <p>not yet semilar posts</p>
     
     {% endfor %}
 
